@@ -1,0 +1,1201 @@
+<apex:page controller="RinconVFPController" lightningStylesheets="true" showHeader="false" sideBar="false" standardStylesheets="false" cache="true" 
+           docType="html-5.0">
+    
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <head>   
+        <meta charset="utf-8" />
+            <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    	<apex:stylesheet value="https://cdnjs.cloudflare.com/ajax/libs/izimodal/1.5.1/css/iziModal.min.css"/>
+        
+	</head> 
+    <style>   
+        /*STYLES FOR INPUT NUMBER*/
+        html{
+        	font-family: 'Salesforce Sans',Arial,sans-serif;
+        }
+        input[type=text],
+        select{
+            height: 25px;
+        }
+        i{
+            font-size: 18px;
+        }
+        textarea{
+            width: 100%;
+        }
+        .iziModal-content{
+            width: auto !important;
+        }
+        input[type=date]::-webkit-inner-spin-button,
+        input[type=date]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+        }
+        input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .date-submit-form{
+            height: 28px;
+        }
+        body input[type="number"]{
+            border: 1px solid rgb(221, 219, 218);
+            max-width: 100%;
+            border-radius: .25rem;
+            background-color: rgb(255, 255, 255);
+            color: rgb(8, 7, 7);
+            -webkit-transition: border .1s linear,background-color .1s linear;
+            transition: border .1s linear,background-color .1s linear;
+            display: inline-block;
+            padding: 0 1rem 0 .75rem;
+            min-height: calc(1.875rem + (1px * 2));
+            line-height: 1.875rem;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        /*GENERAL STYLES*/
+        .opbo-field{margin-bottom: 10px;}
+        #col1,#col2{width:49%;display:inline-block;}
+        .divider{width:600px;border-bottom:2px solid whitesmoke;}
+        .form-center{width:800px;margin-left: 250px;}
+        html{background:whitesmoke;}
+        body{background: white;width:/*900px*/80%;padding: 30px;margin: auto;margin-top: 50px;margin-bottom: 50px;box-shadow: 5px 6px 8px #888888;}
+        input[type=text]{width: 100%;margin-bottom:10px;}
+        .row {display: flex; flex-direction:row;}
+        .column {flex: 50%;padding: 10px;}
+        .ERM,#SRMSP{display: none;}
+        .design-input-erm-srmsp{
+            width: 100%;
+            height: 30px;
+            border-radius: 4px;
+            margin-bottom: 11px;
+        }
+        .canvas-style{
+            border: 2px solid black;
+        }
+        .multiSelectPicklistRow>td>select{
+            width: 240px;
+            height: 200px;
+        }
+        .require-fact-finders{
+            margin-top: 10px;
+        }
+        .design-for-multiselect img{
+            width: 50px;
+            height: 50px;
+        }
+        /*MARGIN FOR AL FIRST PART OF VFP*/
+        .row-paf{
+            padding-left: 40px;
+            padding-right: 40px;
+        }
+        /*STYLES FOR HEADER OF EVERY PAGE*/
+        .header{
+            border: 1.5px solid black;
+            height: 60px;
+        }
+        .header-left{
+            flex: 70%;
+            background-color: red;
+            box-shadow: inset 0px 0px 0px 3px #fff;
+            background: linear-gradient(to bottom, #F50C0A 0%, #DE1D1D 50%, #9E0000 100%);
+        }
+        .header-right{
+            display:flex;
+            flex: 30%;
+            background-color: black;
+            color: gray;
+            box-shadow: inset 0px 0px 0px 3px #fff;
+            text-align:right;
+            align-items: center;
+        }
+        .header-text-right{
+            font-size: 15px;
+            margin-bottom: 0px;
+            margin-left:5px;
+        }
+        /*CONTAINER PAF STYLES*/
+        .container-paf,
+        .container-ff{
+            width: 98%;
+            padding:20px;
+        }
+        .paf-subline{
+            width: 100%;
+            height: 15px;
+        	background: #2b4ed5;//linear-gradient(to bottom, rgba(255,63,38,1) 1%,rgba(226,22,22,1) 44%,rgba(226,22,22,1) 55%,rgba(150,0,0,1) 100%);
+        }
+        /*GENERAL DESIGN FOR INPUTS */
+        .general-design-input{
+            margin-left: 8px;
+            margin-bottom: 0px !important;
+            outline: 0 !important;
+            border-width: 0 0 2px !important;
+            border-color: #c00c0c !important;
+            background-color: #eaeaea !important;
+        }
+        .general-design-input:focus{
+            background-color: white !important;;
+            box-shadow:none !important;
+        }
+        .general-design-undertext{
+            margin-top:0px;
+            font-size: 13px;
+            margin-left: 10px;
+        }
+        /* GROSS EARNINGS LAST 4 YEARS STYLE */
+        .gelfy-style{
+            margin-left: .5rem;
+            margin-bottom: 20px !important;
+        }
+        /* STYLE FOR TABLE BUSSINESS OWNERS */
+        .bo-style{
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .bo-style td,.bo-style th{
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        .bo-style tr:nth-child(even) {
+            background-color: #eaeaea;
+        }
+        .dateFormat{
+            display:none;
+        }
+        .ERIHiddenTitleSPCB,
+        .ERIHiddenTitleERMCB{
+            display:none;
+        }
+        .ERI-design-input{
+            width:100%;
+            height: 25px;
+            margin-bottom: 10px !important;
+        }
+        .ERM-design-radiobuttons-text{
+            text-align: left;               
+            /*padding-left: 80px;*/
+        }
+        .ERM-design-radiobuttons-text>h3{
+            font-size: 16px;
+        }
+        .ERM-design-radiobuttons-list{
+            flex: 90% !important;
+        }
+        .delete-contact-fields,
+        .delete-contact-BO{
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background-color: #c53535;
+            color: white;
+            font-weight: bold;
+            font-size: 17px;
+            box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+            transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition-delay: 0.2s;
+            border: none;
+            outline:none;
+        }
+        .new-contact-button,
+        .new-bussiness-owner,
+        .submit-form-button,
+        .submit-form-fake-button{
+            background-color: #c53535 !important;
+            color: white !important;
+            box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26) !important;
+            transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            transition-delay: 0.2s !important;
+            border: none !important;
+            outline:none !important;
+        }
+        .submit-form-button{
+            display: none;
+        }
+        .delete-contact-fields:hover,
+        .submit-form-fake-button:hover,
+        .delete-contact-BO:hover,
+        .new-contact-button:hover,
+        .submit-form-button:hover{
+            background-color: #9a1b1b !important;
+        }
+        .input-bo-currency{
+            border: 1px solid rgb(221, 219, 218);
+            max-width: 100%;
+            border-radius: .25rem;
+            background-color: rgb(255, 255, 255);
+            color: rgb(8, 7, 7);
+            -webkit-transition: border .1s linear,background-color .1s linear;
+            transition: border .1s linear,background-color .1s linear;
+            display: inline-block;
+            padding: 0 1rem 0 .75rem;
+            min-height: calc(1.875rem + (1px * 2));
+            line-height: 1.875rem;
+            margin-bottom: 10px;
+        }
+        .hidden-field{
+            display: none !important;
+        }
+        .reinsurance-style{
+            text-align: justify;
+            font-weight: normal;
+            margin-bottom: 0px;
+        }
+        /* OVERRIDE TIPPY JS STYLE */
+        .tippy-tooltip {
+            /* background-color: #DBEEF5; */
+            border-radius: 5px;
+            color: black;
+        }
+        .tippy-tooltip .tippy-backdrop{
+            background-color:rgb(234, 234, 234);
+        }
+        /* OVERRIDE IZI MODAL STYLE */
+        .iziModal-content{
+            padding: 30px !important;
+        }
+        /* STYLES BUTTONS */
+        .tooltip-general{
+            width: 33px;
+            height: 33px;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 15px;
+            border:none;
+        }
+        .tooltip-namechoice,.tooltip-president,.tooltip-shareholder{
+            width: 33px;
+            height: 33px;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 15px;
+            border:none;
+        }
+        /*REQUIRE FACT FINDERS TEXT*/
+        .require-fact-finders-text{
+            display: none;
+        }
+        /*ADD MARGIN TOP*/
+        .add-margin-bottom{
+            margin-bottom: 45px !important;
+        }
+        /* STYLE FOR NEW CONTACT AND BUSSINESS OWNERS */
+        .input-bo-string,
+        .input-nc-string{
+          /* display: none; */
+        }
+        
+        .import-details{
+        	padding: 18px;
+        }
+        
+        .number-td {
+        	text-align: right;
+        	padding-right: 6px;
+        }
+        
+        .mybtn {
+        	background-color: #2271b3;
+        	color: white;
+            display:inline-block;
+            padding:6px 12px;
+            margin-bottom:0;
+            font-size:14px;
+            font-weight:400;
+            line-height:1.42857143;
+            text-align:center;
+            white-space:nowrap;
+            vertical-align:middle;
+            -ms-touch-action:manipulation;
+            touch-action:manipulation;
+            cursor:pointer;-webkit-user-select:none;
+        }
+        
+        .myDetails{
+        	vertical-align: top; 
+        //text-align: center;
+        }
+        .myDetails > strong{
+        	padding-left: 30%;
+        	font-size: 20px;
+        }
+        .myDetailsDivField{
+        	 font-size: 20px;
+        }
+        #myLabel {
+        	cursor: pointer;
+            background-color: blue;
+            color: white;
+            padding-top: 10px;
+        	padding-bottom: 10px;
+        }
+        
+        #fileId {
+           opacity: 0;
+           position: absolute;
+           z-index: -1;
+        }
+        
+        #fileId2 {
+           opacity: 0;
+           position: absolute;
+           z-index: -1;
+        }
+        .containerPB {
+            position: relative;
+            width: 130px;
+            float:left;
+        }
+        
+        .centerPB {
+            position: absolute;
+            
+            top: 30%;
+            width: 115px;
+            text-align: center;
+            font-size: 18px;
+            white-space: pre-wrap;         
+            white-space: -moz-pre-wrap;   
+            white-space: -pre-wrap;       
+            white-space: -o-pre-wrap;   
+            word-wrap: break-word;      
+        }
+        
+        .imgPB {
+            width: 120px;
+            height: 80px;    
+        }
+    </style>
+    <body>
+
+    <apex:form >
+        
+        <apex:pageMessages ></apex:pageMessages>
+        <div class="row">
+            <!--<div class="column header-left"></div>
+            <div class="column header-right">
+                <p class="header-text-right" style="margin-left:160px;"></p>
+                <p class="header-text-right" style="color:red;"></p>
+            </div>
+			-->
+            <!-- Image logo Strategic Risk -->
+            <div class="column" style="text-align:center;">
+                <apex:image value="{!$Resource.LogoRincon}" width="100%" style="margin-top:-20px;margin-bottom:-30px;max-width:700px;" /> 
+            </div>
+        </div>
+	
+
+        <!-- <apex:inputHidden value="{!jsonContacts}" id="stringContat"/> -->
+
+        <apex:panelGroup rendered="{!showPage}" id="page1">
+        <div class="container-paf">
+            
+            <div class="row" style="display: none;">
+                <div class="column">
+                    <h3 class="reinsurance-style">
+                        Reinsurance has tax implications in a number of areas including (but not limited to): estate, gift and income taxes. 
+                        Clients should always be advised to rely on their legal and tax advisors to help them navigate through their various tax issues. 
+                        Strategic Risk Alternatives and representatives do not give tax or legal advice. Please consult with your attorney, accountant, 
+                        or tax advisor for additional information.
+                    </h3>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="column">
+                    <h2>Rincon Form</h2>
+                </div>
+                <div class="column" style="text-align: right;">
+                    <label id="myLabel" for="fileId">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Secure Upload Files&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                    <input type="file" id="fileId" name="attFile" onchange="readFileName(this)"/><br/>
+            	</div>
+                <br/>
+            </div>
+                <div class="paf-subline"></div>
+            
+            <!--<div class="row">
+                <div class="column" style="text-align:center;">
+                    <h2 style="margin-bottom: 0px;margin-top:20px;">Loan Status</h2>
+                    <apex:inputField styleClass="general-design-input stage-name" value="{!opportunity.StageName}"/>
+                	
+                    
+                </div>
+            </div>-->
+            
+             <div class="row" style="text-align:center; padding-left: 30px;">
+                 <div class="column" >
+                     <h2 style="margin-bottom: 0px;margin-top:20px;">Loan Status</h2>
+                     <apex:repeat value="{!optionsStage}" var="stg" >
+                        <apex:outputpanel rendered="{!if(auxStage<>stg.key,true,false)}">
+                            <div class="containerPB tooltip-test" onclick="stageClick(this);" html-key-val="{!stg.key}" data-tippy-content="{!stg.helpText}">
+                              <apex:image value="{!$Resource.IconoPath}" style="opacity:0.2" styleClass="imgPB"/>
+                              <div class="centerPB">
+                                  <apex:outputText value="{!stg.key}"/>
+                              </div>
+                            </div>
+                        </apex:outputpanel>
+                
+                        <apex:outputpanel rendered="{!if(auxStage==stg.key,true,false)}">
+                            <div class="containerPB tooltip-test" onclick="stageClick(this);" html-key-val="{!stg.key}" data-tippy-content="{!stg.helpText}">
+                              <apex:image value="{!$Resource.IconoPath}" style="opacity:1" styleClass="imgPB"/>
+                              <div class="centerPB">
+                                  <apex:outputText value="{!stg.key}"/>
+                              </div>
+                            </div>
+                        </apex:outputpanel>
+                    </apex:repeat>
+                 </div>
+            </div> 
+            
+            <div class="column" style="text-align:center; display: none;">
+                    <h2 style="margin-bottom: 0px;margin-top:20px;">Loan Status</h2>
+                    <apex:selectRadio value="{!auxStage}" styleClass="general-design-input stage-name">
+                        <apex:selectOptions value="{!stages}"></apex:selectOptions>
+                    </apex:selectRadio>
+           	</div>
+            
+            <div class="row">
+                <div class="column" style="text-align:center;">
+                    <h2 style="margin-bottom: 0px;margin-top:20px;">Projected Close Date</h2>
+                    <!--<apex:input type="date" styleClass="general-design-input date-submit-form"
+                           style="width:40%;" value="{!auxCloseDate}"/>-->
+                    <apex:outputText value="{0, date, MM'/'dd'/'yyyy}">
+                    	<apex:param value="{!auxCloseDate}" />
+                    </apex:outputText>
+					
+                    <!-- puto required: 
+                                     required="true"-->                	
+               	</div>
+            </div>
+            
+            
+            <div class="row">
+                <div class="column" style="text-align:center;">
+                	<h2 style="margin-bottom: 0px;margin-top:20px;" id="lWhere">Where are we</h2>
+                    <!--<apex:inputField value="{!opportunity.Where_are_we__c}" style="width:40%;"/>-->
+                    <div id="fWhere">
+                        <apex:outputText value="{!opportunity.Where_are_we__c}" escape="false"/>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <!--<div class="row">
+                <div class="column" style="text-align:center;">
+                    <h2 style="margin-bottom: 0px;margin-top:20px;">Next Step</h2>
+                    <apex:inputField styleClass="general-design-input secondchoice-field" 
+                                     value="{!opportunity.NextStep}" style="width:65%;" />
+                </div>
+            </div>-->
+            
+        
+        <div class="row" style="text-align: center;">
+       		<h3 class="paf-subline" style="height:30px;color:white;padding-left: 20px;padding-top: 5px;">Upload files</h3>
+        </div>
+        <div class="row">
+            
+            <!--<div class="column">
+                <label id="myLabel" for="fileId">Secure</label>
+        		<input type="file" id="fileId" name="attFile" onchange="readFileName(this)"/><br/>
+                <h4 style="display: none;">Choose File</h4>
+            </div>-->
+            
+            <div class="column" id="fileName" style="text-align: center;">
+        		Choose File in the "Secure Upload Files" button
+            </div>
+            <div class="column" style="text-align: center;">
+        		<input type="button" value="Save File" onclick="remoteLocationPost();" styleClass="background-color: blue;" class="mybtn"/>
+            </div>
+            
+        </div>
+        
+        <div class="row" style="text-align: center;">
+       		<h3 class="paf-subline" style="height:30px;color:white;padding-left: 20px;padding-top: 5px;">Files for you</h3>
+        </div>
+       	<apex:outputPanel id="attcs">
+            <apex:repeat var="attachment" value="{!files}" >
+            	<!--<apex:iframe src="/servlet/servlet.FileDownload—file={!attachment.ContentDocumentId}"/>
+                <br/><a href="{!baseUrl}{!attachment.ContentDocumentId}" target="_document"><center>{!attachment.ContentDocument.title}</center></a>-->
+                <br/><center><a href="{!links[attachment.ContentDocumentId]}" target="_document">{!attachment.ContentDocument.title}</a></center>
+            </apex:repeat>
+        </apex:outputPanel>
+            
+        <apex:outputPanel id="attcs2">
+            <div>
+                {!filesSize}
+            </div>
+        </apex:outputPanel>
+            
+        
+        <!--<apex:outputPanel id="test2">
+				Hi - {!opportunity.StageName}
+            </apex:outputPanel>-->
+            
+            <div class="row">
+                <h3 class="paf-subline" style="height:30px;color:white;padding-left: 20px;padding-top: 5px;">Important Details about your Loan:</h3>
+            </div>
+
+            <apex:outputPanel id="detailsLoan">
+                
+            <div class="row import-details" style="{!IF(opportunity.Signed_Letter_of_Intent__c == null, 'display: none;', '')}">
+				<div class="column myDetails">
+                	<strong>Signed Letter of Intent: </strong>
+                </div>
+                <div class="column myDetailsDivField">
+                	<apex:outputText styleClass="display: inline-block;" value="{0, date, MM'/'dd'/'yyyy}">
+                    	<apex:param value="{!IF(opportunity.Signed_Letter_of_Intent__c == null, '', opportunity.Signed_Letter_of_Intent__c)}" />
+                    </apex:outputText>
+                </div>
+			</div>
+            
+            <div class="row import-details" style="{!IF(opportunity.Good_Faith_Deposit_Received__c == null, 'display: none;', '')}">
+				<div class="column myDetails">
+                	<strong>Good Faith Deposit Received: </strong>
+                    <button type="button" class="tooltip-general tooltip-goodfaithdepositreceived" data-tippy-content="">?</button>
+                </div>
+                <div class="column myDetailsDivField">
+                	<apex:outputText styleClass="display: inline-block;" value="{0, date, MM'/'dd'/'yyyy}">
+                    	<apex:param value="{!IF(opportunity.Good_Faith_Deposit_Received__c == null, '', opportunity.Good_Faith_Deposit_Received__c)}" />
+                    </apex:outputText>
+                </div>
+			</div>
+            
+            <div class="row import-details" style="{!IF(opportunity.Appraisal_Inspection_Date__c == null, 'display: none;', '')}">
+				<div class="column myDetails">
+                	<strong>Appraisal Inspection Date: </strong>
+                    <button type="button" class="tooltip-general tooltip-appraisalinspectiondate" data-tippy-content="">?</button>
+                </div>
+                <div class="column myDetailsDivField">
+                	<apex:outputText styleClass="display: inline-block;" value="{0, date, MM'/'dd'/'yyyy}">
+                    	<apex:param value="{!IF(opportunity.Appraisal_Inspection_Date__c == null, '', opportunity.Appraisal_Inspection_Date__c)}" />
+                    </apex:outputText>
+                </div>
+			</div>
+            
+            <div class="row import-details" style="{!IF(opportunity.Appraisal_Due_Date__c == null, 'display: none;', '')}">
+				<div class="column myDetails">
+                	<strong>Appraisal Due Date: </strong>
+                    <button type="button" class="tooltip-general tooltip-appraisalduedate" data-tippy-content="">?</button>
+                </div>
+                <div class="column myDetailsDivField">
+                	<apex:outputText styleClass="display: inline-block;" value="{0, date, MM'/'dd'/'yyyy}">
+                    	<apex:param value="{!IF(opportunity.Appraisal_Due_Date__c == null, '', opportunity.Appraisal_Due_Date__c)}" />
+                    </apex:outputText>
+                </div>
+			</div>
+            
+            <div class="row import-details" style="{!IF(opportunity.Interest_Rate__c == null, 'display: none;', '')}">
+				<div class="column myDetails">
+                	<strong>Interest Rate: </strong>
+                </div>
+                <div class="column myDetailsDivField">
+                	<apex:outputText value="{0,number,###,##0.00}%">
+                    	<apex:param value="{!IF(opportunity.Interest_Rate__c==null, 0, opportunity.Interest_Rate__c)}" />
+                    </apex:outputText>
+                </div>
+			</div>
+            
+            <div class="row import-details" style="{!IF(opportunity.Loan_Amount__c == null, 'display: none;', '')}">
+				<div class="column myDetails">
+                	<strong>Loan Amount: </strong>
+                </div>
+                <div class="column myDetailsDivField">
+                	<apex:outputText value="${0,number,###,##0.00}">
+                    	<apex:param value="{!IF(opportunity.Loan_Amount__c==null, 0, opportunity.Loan_Amount__c)}" />
+                    </apex:outputText>
+                </div>
+			</div>
+            
+            <div class="row import-details" style="{!IF(opportunity.StageName == 'Closed Won', IF(opportunity.Actual_Close_Date__c != null ,'','display:none;') ,'display:none;')}">
+				<div class="column myDetails">
+                	<strong>Actual Close Date: </strong>
+                    <button type="button" class="tooltip-general tooltip-actualclosedate" data-tippy-content="">?</button>
+                </div>
+                <div class="column myDetailsDivField">
+                	<apex:outputText styleClass="display: inline-block;" value="{0, date, MM'/'dd'/'yyyy}">
+                    	<apex:param value="{!IF(opportunity.Actual_Close_Date__c == null, '', opportunity.Actual_Close_Date__c)}" />
+                    </apex:outputText>
+                </div>
+			</div>
+            
+            <div class="row import-details" style="{!IF(opportunity.StageName == 'Closed Won',  IF(opportunity.Prepayment_expiration_date__c != null ,'','display:none;') ,'display:none;')}">
+				<div class="column myDetails">
+                	<strong>Prepayment Penalty Expiration Date: </strong>
+                    <button type="button" class="tooltip-general tooltip-prepaymentexpirationdate" data-tippy-content="">?</button>
+                </div>
+                <div class="column myDetailsDivField">
+                	<apex:outputText styleClass="display: inline-block;" value="{0, date, MM'/'dd'/'yyyy}">
+                    	<apex:param value="{!IF(opportunity.Prepayment_expiration_date__c == null, '', opportunity.Prepayment_expiration_date__c)}" />
+                    </apex:outputText>
+                </div>
+			</div>
+            
+            <div class="row import-details" style="{!IF(opportunity.StageName == 'Closed Won',  IF(opportunity.Fixed_Period_Expiration__c != null ,'','display:none;') ,'display:none;')}">
+				<div class="column myDetails">
+                	<strong>Fixed Period Expiration: </strong>
+                    <button type="button" class="tooltip-general tooltip-fixedperiodexpiration" data-tippy-content="">?</button>
+                </div>
+                <div class="column myDetailsDivField">
+                	<apex:outputText styleClass="display: inline-block;" value="{0, date, MM'/'dd'/'yyyy}">
+                    	<apex:param value="{!IF(opportunity.Fixed_Period_Expiration__c == null, '', opportunity.Fixed_Period_Expiration__c)}" />
+                    </apex:outputText>
+                </div>
+			</div>
+            
+            <div class="row import-details" style="{!IF(opportunity.StageName == 'Closed Won',  IF(opportunity.Balloon_Payment__c != null ,'','display:none;') ,'display:none;')}">
+				<div class="column myDetails">
+                	<strong>Balloon Payment: </strong>
+                    <button type="button" class="tooltip-general tooltip-ballonpayment" data-tippy-content="">?</button>
+                </div>
+                <div class="column myDetailsDivField">
+                	<apex:outputText styleClass="display: inline-block;" value="{0, date, MM'/'dd'/'yyyy}">
+                    	<apex:param value="{!IF(opportunity.Balloon_Payment__c == null, '', opportunity.Balloon_Payment__c)}" />
+                    </apex:outputText>
+                </div>
+			</div>
+            
+            </apex:outputPanel>            
+
+               <!--<div class="row">
+                   <div class="column">
+                       <apex:inputField styleClass="general-design-input" style="resize:none;" value="{!contact.Phone}"/>
+                       <h3 class="general-design-undertext">Phone Number: Work</h3>
+                   </div>
+                   <div class="column">
+                       <apex:inputField styleClass="general-design-input" value="{!contact.MobilePhone}"/>
+                       <h3 class="general-design-undertext">Mobile</h3>
+                   </div>
+               </div>-->
+            
+        <div class="row">
+                <h3 class="paf-subline" style="height:30px;color:white;padding-left: 20px;padding-top: 5px;">All Loans:</h3>
+      	</div>
+            
+     	<apex:outputPanel id="oppsRelated">
+                        <script>
+						$('input,select').keypress(function(event) { return event.keyCode != 13; });
+                        </script>
+           	<input type="hidden" id="message-alert" value="{!messageAlert}" />
+            <div class="table-responsive">
+            	<table class="table table-sm" style="width: 100%;">
+                	<thead>
+                    	<tr style="font-weight:bold;">
+                            <th style="width:20%; border: 1px solid black; text-align:center;">Property Address</th>
+                            <th style="width:20%; border: 1px solid black; text-align:center;">Interest Rate</th>
+                            <th style="width:20%; border: 1px solid black; text-align:center;">Loan Amount</th>
+                            <th style="width:20%; border: 1px solid black; text-align:center;">Prepayment Expiration Date</th>
+                            <th style="width:20%; border: 1px solid black; text-align:center;">Fixed Period Expiration</th>
+                     	</tr>
+                  	</thead>
+                    <tbody>
+                    	<apex:variable var="count" value="{!0}" />
+                        <apex:variable var="total" value="{!0}" />
+                        <apex:repeat value="{!opps}" var="opp">
+                            <tr>
+                                <td style="border: 1px solid black; text-align:center;">{!opp.Name}</td>
+                                <td style="border: 1px solid black; text-align:center;" class="number-td">
+                                    <apex:outputText value="{0,number,###,##0.00}%">
+                                        <apex:param value="{!opp.Interest_Rate__c}"/>
+                                    </apex:outputText>
+                                </td>
+                                <td style="border: 1px solid black; text-align:center;" class="number-td">
+                                    <apex:outputText value="${0,number,###,##0.00}">
+                                        <apex:param value="{!opp.Loan_Amount__c}"/>
+                                    </apex:outputText>
+                                </td>
+                                <td style="border: 1px solid black; text-align:center;">
+                                    <apex:outputText value="{0, date, MM'/'dd'/'yyyy}">
+                                        <apex:param value="{!opp.Prepayment_expiration_date__c}" />
+                                    </apex:outputText>
+                                </td>
+                                <td style="border: 1px solid black; text-align:center;">
+                                	<apex:outputText value="{0, date, MM'/'dd'/'yyyy}">
+                                        <apex:param value="{!opp.Fixed_Period_Expiration__c}" />
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+                        <apex:variable var="count" value="{!count + 1}" />
+                        <apex:variable var="total" value="{!total + IF(opp.Loan_Amount__c <> null, opp.Loan_Amount__c, 0)}" />
+                        </apex:repeat>
+                 	</tbody>
+                    <tfooter>
+                    	<tr style="font-weight:bold;">
+                        	<td colspan="2">{!count} record(s)</td>
+                            <td class="number-td">
+                            	<apex:outputText value="${0,number,###,##0.00}">
+                                	<apex:param value="{!total}"/>
+                            	</apex:outputText>
+                            </td>
+                            <td colspan="2"></td>
+                     	</tr>
+                	</tfooter>
+              	</table>
+          	</div>
+            
+     	</apex:outputPanel>
+            
+        <!--<apex:outputPanel id="test3" >
+            <div class="row" >
+                <div class="column" style="text-align:right;">
+                    <h2 style="text-decoration: underline;margin-bottom: 0px;margin-top:20px;">Name Choice</h2>
+                </div>
+                <div class="column" style="text-align:left;margin-top: 17px;">
+                    <button type="button" class="tooltip-namechoice" data-tippy-content="">?</button>
+                </div>
+            </div>
+     	</apex:outputPanel>-->
+            
+        <div style="width:100%;text-align:center;margin-top:50px;">
+            <!--<button type="button" 
+                    class="submit-form-fake-button validate-form" 
+                    style="width:100px;height:40px;text-align:center;border-radius: 0;">
+                    SUBMIT
+            </button>
+            <apex:commandButton styleClass="submit-form-button"
+                                style="width:100px;height:40px;text-align:center;border-radius: 0;" 
+                                action="{!save}" 
+                                value="SUBMIT"/>-->
+                                <!-- onclick="appendContacts()" -->
+        </div>
+          
+        </div>
+        </apex:panelGroup>
+        
+        <div>
+            <apex:panelGroup rendered="{!!showPage}" id="page2">                
+            	<div class="container-paf">
+
+                	<div class="row">
+                    	<div class="column">
+                        	<h2>Rincon Form</h2>
+                           	<div class="paf-subline"></div>
+                       	</div>
+                   	</div>
+            
+                    <div class="row">
+                    	<div class="column" style="text-align:center;">
+                        	<h2 style="margin-bottom: 0px;margin-top:20px;">Username</h2>
+                            	<apex:input styleClass="general-design-input secondchoice-field" 
+                                                         value="{!username}" style="width:45%;" />
+                    	</div>
+                   	</div>     
+                    
+                    <div class="row">
+                    	<div class="column" style="text-align:center;">
+                        	<h2 style="margin-bottom: 0px;margin-top:20px;">Password</h2>
+                            	<apex:input styleClass="general-design-input secondchoice-field" 
+                                                         value="{!password}" style="width:45%;" />
+                    	</div>
+                   	</div>   
+                    
+                    <div class="row">
+                        <div class="column" style="text-align:center;">
+                        	<!--<input type="button" value="Login" onclick="login();" styleClass="background-color: blue;" class="mybtn"/>-->
+                        	<apex:commandLink styleClass="linkMessage" action="{!redirectOpp}" value="Login"></apex:commandLink>
+                        </div>
+                    </div>
+            	</div>
+           	</apex:panelGroup>
+        </div>
+        
+              
+        <div>
+            <apex:panelGroup rendered="{!showEmpty}" id="page3">                
+            	<div class="container-paf">
+
+                	<!--<div class="row">
+                    	<div class="column">
+                        	<h2>Rincon Form</h2>
+                           	<div class="paf-subline"></div>
+                       	</div>
+                   	</div>-->
+                    
+                    <div class="row">
+                        <div class="column" style="text-align:center;">
+                        	{!message}
+                        </div>
+                    </div>
+            	</div>
+           	</apex:panelGroup>
+        </div>
+        
+        
+        
+        
+        <!-- Action Functions
+        <apex:actionFunction action="{!changeStage}" name="changeStageJs" reRender="detailsLoan, test2" oncomplete="review();"/>-->
+        <apex:actionFunction action="{!changeStage}" name="changeStageJs" reRender="detailsLoan, test3" oncomplete="loadTippys();"/>
+        
+        <apex:actionFunction name="passToController" action="{!doAttachment}" reRender="attcs, attcs2" oncomplete="clearInputFile();">
+            <apex:param name="fname" value="" assignTo="{!filename}" />
+         	<apex:param name="fBody" value="" assignTo="{!body}" />
+       	</apex:actionFunction>
+        
+        <apex:actionFunction name="passToLogin" action="{!redirectOpp}" reRender="page1, page2, page3" oncomplete="verifyLogin();"/>
+        <!-- <apex:pageBlock id="titleRerender"></apex:pageBlock>
+
+        <apex:actionFunction name="titleValues" action="{!getTitles}" reRender="titleRerender"/> -->
+        
+        
+
+    </apex:form>
+        
+        <!-- MODAL TERMNS AND CONDITIONS -->
+    <div id="modal" style="display: none;"> <!-- data-iziModal-fullscreen="true"  data-iziModal-title="Welcome"  data-iziModal-subtitle="Subtitle"  data-iziModal-icon="icon-home" -->
+        <h3>Terms of Insurance Management Agreement</h3>
+        <p style="font-weight:bold">I – Company Officer Acknowledgements</p>
+        <p>The officer agrees to provide information and/or documentation in a timely manner as may be
+                Agreement.
+        </p>
+        <p style="font-weight:bold">II - Access to Funds</p>
+        <p>Shareholders may access the funds in any of the account(s) of the ARC for the following
+                conditions ONLY. An officer must sign on all withdrawals, loans, dividend declarations or
+                transfers. SRA will not be held liable for distributions made without prior written approval by
+                SRA.
+        </p>
+        <p>a) Claims and Cancellations: Authorized claims and cancellations supported by the
+                appropriate documentation of those items will be provided to the ARC upon
+                request.
+        </p>
+        <p>b) Taxes: Appropriate Federal, State, or Local Fees may be withdrawn and paid to
+                the appropriate authority.
+        </p>
+        <p>c) Company Management: This includes company administration, preparation of
+                Financial Statements and Tax Returns. Management fees of $4,000 will be
+                settled in January of each year.
+        </p>
+        <p>d) Charter Renewal: SRA will deduct $1,000 each year for the ARC’s Charter
+                Renewal.
+        </p>
+        <p>e) Loans: Shareholders may borrow funds from the ARC upon written approval by
+                SRA. Loan amounts must come from surplus reserves (earned premium), and
+                may not encumber reserve dollars that are at risk of claims.
+        </p>
+        <p>f) Dividends: Shareholders may declare dividends from the ARC at its discretion.
+                Dividends must be distributed equally across all shareholders equal to their
+                percentage of ownership. Dividends must be reported to SRA prior to being
+                taken.
+        </p>
+        <p style="font-weight:bold">III – Required Reserve Balance</p>
+        <p>ARC agrees to establish an account at the preferred financial institution of Strategic Risk
+                Alternatives and maintain a liquid reserve balance as defined within Cardinal Point Insurance’s
+                Investment Agreement.
+        </p>
+        <p style="font-weight:bold">IV – Risk Acknowledgement</p>
+        <p>SRA does not guarantee the future performance of the ARC, risk strategy or recommendation
+                related thereto. The officer understands the ARC strategy may be subject to various market,
+                economic, political and business risks.
+        </p>
+        <p style="font-weight:bold">V – Electronic Delivery</p>
+        <p>The officer has authorized SRA to distribute materials and information to the officer in an
+                electronic format to the email address provided in the Company Profile or otherwise provided
+                by the officer.
+        </p>
+        <p style="font-weight:bold">VI – Amendment/Assignment</p>
+        <p>The parties hereby agree that no amendment or assignment of this Agreement may be made
+                without written consent of each party; however, the foregoing shall not be construed to
+                prohibit assignment to a successor or subsidiary. Any notice under this Agreement shall be in
+                writing and sent to the party at the address of record unless the parties are notified otherwise.
+        </p>
+        <p style="font-weight:bold">VII – Termination</p>
+        <p>Any party may terminate the Agreement immediately upon written notice to the other parties
+                hereto, which shall be effective upon receipt by the other parties. Termination shall not affect
+                ARC’s obligation to pay fees through the effective date of termination. A termination fee of
+                $2,000 will be charged to ARC in consideration of final tax return, 1099-D issuance and closing
+                procedures.
+        </p>
+        <p style="font-weight:bold">VIII – Dispute Resolution</p>
+        <p>Any dispute arising out of this agreement shall be subject to final and binding arbitration
+                according to the Commercial Arbitration Rules of the American Arbitration Association then in
+                effect. Judgment upon any arbitration award may be entered in any court, state or federal,
+                having jurisdiction. The prevailing party in any arbitration and other legal proceeding under this
+                section will be entitled to recover reasonable attorney’s fees, costs and expenses.
+        </p>
+        <p style="font-weight:bold">II – Governing Law</p>
+        <p>The laws of the State of Idaho shall govern this agreement.
+        </p>
+        <p style="font-weight:bold">II – Severability/Waiver of Breach/Entire Agreement</p>
+        <p>If any provision of this Agreement shall be deemed unenforceable by statute, rule, regulation,
+                decision of a court of competent jurisdiction, or otherwise, the parties agree that such
+                provision shall be construed in a manner as to most nearly preserve its original intent while
+                maintaining its validity and/or enforceability. The invalidity of any part of this Agreement shall
+                not render invalid the remainder of this Agreement and, to that extent, the provision of this
+                Agreement shall be deemed to be severable.
+                
+        </p>
+        <p>The failure of any party to enforce its rights after breach by another shall not be construed as to
+                consent to the continuation of such breach, nor as a waiver of breach of any other provision of
+                this Agreement.
+        </p>
+        <p>The parties acknowledge that this Agreement represents the entire agreement among them
+                with respect to the Services and that it shall supersede any other agreement whether written,
+                oral, or otherwise with regard to the subject matter contained herein.
+                
+        </p>
+    </div>
+        
+        <!-- JQUERY -->
+    <script src="https://html5shim.googlecode.com/svn/trunk/html5.js">
+    </script>
+    <apex:includeScript value="https://code.jquery.com/jquery-3.3.1.min.js"/>
+    <!-- SWEET ALERT 2 -->
+    <apex:includeScript value="https://cdn.jsdelivr.net/npm/promise-polyfill@7.1.0/dist/promise.min.js"/>
+    <apex:includeScript value="https://unpkg.com/sweetalert2@7.12.10/dist/sweetalert2.all.js"/>
+    <!-- PARSLEY -->
+    <apex:includeScript value="https://cdnjs.cloudflare.com/ajax/libs/parsley.js/2.8.1/parsley.min.js"/>
+    <!-- TIPPY JS -->
+    <apex:includeScript value="https://unpkg.com/popper.js@1/dist/umd/popper.min.js"/>
+    <apex:includeScript value="https://unpkg.com/tippy.js@4"/>
+    <!-- IZIMODAL -->
+    <apex:includeScript value="https://cdnjs.cloudflare.com/ajax/libs/izimodal/1.5.1/js/iziModal.min.js"/>
+    <!-- AJAX IN APEX -->
+    <apex:includeScript value="/soap/ajax/45.0/connection.js"/>
+    <apex:includeScript value="/soap/ajax/45.0/apex.js"/>
+    <script type="text/javascript" src="/soap/ajax/45.0/connection.js">
+    </script>
+    <script type="text/javascript" src="/soap/ajax/45.0/apex.js">
+	</script>
+    <!-- VALIDATE JS, NOT USED -->
+    <!-- <apex:includeScript value="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"/> -->
+
+    <script type="text/javascript">
+        console.log('Welcome');
+        $j = jQuery.noConflict();
+        var selectTitles='';
+		$j(document).ready(function(){
+            console.log('Welcome 2	');
+            //selectTitles = fnGenerateSelectTitle();
+            //fnChangueGELFY();
+            //SET DATE TO DATE INPUT
+            var now = new Date();
+            var day = ("0" + now.getDate()).slice(-2);
+            var month = ("0" + (now.getMonth() + 1)).slice(-2);
+            var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
+            //$j('.date-submit-form').val(today);
+            $j('.secretary-lastname-required').val();
+            $j('.shareholder-lastname-required').val();
+            //fnAddClassToRequireFactFinders();
+            configTooltips();
+        });
+        
+        var blobfile;
+      	function getAsText(readFile) {
+            var reader = new FileReader();
+            reader.readAsDataURL(readFile);
+            reader.onload = attLoaded;
+      	}
+      	function attLoaded(evt) {  
+            console.log('att att ');
+            var fileString = evt.target.result;
+            blobfile = fileString;
+            var  input = document.getElementById("fileId");
+            var filename= input.value;   
+            console.log('filename: ' + filename);
+            console.log('blobfile: ' + blobfile);
+            passToController(filename,blobfile);
+     	}
+        function readFileName(input){
+            console.log('Hi');
+            console.log(input.value);
+            if (input.files && input.files[0]) {
+                document.getElementById("fileName").innerHTML = input.files[0].name;
+            }
+            
+        }
+      	function remoteLocationPost(){
+            /*var fbody= document.getElementById("fileId").files[0];
+            getAsText(fbody); */
+            var input = document.getElementById("fileId");
+            console.log('att js' + input.value);
+            
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+            	console.log('f0 ' + input.files[0]);
+            	reader.file = input.files[0];
+            	console.log('1');
+                reader.onload = function(e) {
+                    console.log('att js 22222');
+                    var base64 = e.target.result;
+                    const base64Mark = 'base64,';
+					const dataStart = base64.indexOf(base64Mark) + base64Mark.length;
+                    passToController(input.files[0].name, base64.substring(dataStart));
+                    console.log('calllll: ' + input.value);
+                }
+                console.log('2');
+                reader.readAsDataURL(input.files[0]);
+        	}else{
+                fnShowMessage('WARNING','Choose file','warning',false);
+                console.log('Choose file');
+           	}
+      	}  
+        
+        function login(){
+            passToLogin();
+        }
+        
+        function verifyLogin(){
+            console.log('verify login.')
+        }
+        
+        function clearInputFile(){
+        	var input = document.getElementById("fileId");
+            input.value = '';
+            document.getElementById("fileName").innerHTML = 'Choose File in the "Secure Upload Files" button';
+        }
+        
+        $j('.stage-name').change(function(){
+            console.log('Hi');
+            changeStageJs();
+        });
+        
+        //TOOLTIPS
+        function configTooltips(){
+            tippy('.tooltip-test',{
+                placement: 'right',
+                allowHTML:true,
+                maxWidth:550,
+                content: tippy('[data-tippy-content]')
+            });
+            
+            tippy('.tooltip-goodfaithdepositreceived',{
+                placement: 'right',
+                allowHTML:true,
+                maxWidth:550,
+                content: '<h4 style="font-weight: bold;">Good Faith Deposit Received</h4>' +
+                          '<p style="text-align: justify;font-size:12px">' +
+                            'When we have both Signed Letter of Intent and Good Faith Deposit, this is when the loan starts! This typically starts the 60-day process.' +
+                          '</p>'
+            });
+            
+            tippy('.tooltip-appraisalinspectiondate',{
+                placement: 'right',
+                allowHTML:true,
+                maxWidth:550,
+                content: '<h4 style="font-weight: bold;">Appraisal Inspection Date</h4>' +
+                          '<p style="text-align: justify;font-size:12px">' +
+                            'The date when the appraiser will be at the property!' +
+                          '</p>'
+            });
+            
+            tippy('.tooltip-appraisalduedate',{
+                placement: 'right',
+                allowHTML:true,
+                maxWidth:550,
+                content: '<h4 style="font-weight: bold;">Appraisal Due Date</h4>' +
+                          '<p style="text-align: justify;font-size:12px">' +
+                            'You will receive your results back from the appraiser on this date!' +
+                          '</p>'
+            });
+            
+            tippy('.tooltip-actualclosedate',{
+                placement: 'right',
+                allowHTML:true,
+                maxWidth:550,
+                content: '<h4 style="font-weight: bold;">Actual Close Date</h4>' +
+                          '<p style="text-align: justify;font-size:12px">' +
+                            'This is when Loan has closed and recorded!' +
+                          '</p>'
+            });
+            
+            tippy('.tooltip-prepaymentexpirationdate',{
+                placement: 'right',
+                allowHTML:true,
+                maxWidth:550,
+                content: '<h4 style="font-weight: bold;">Prepayment Penalty Expiration Date</h4>' +
+                          '<p style="text-align: justify;font-size:12px">' +
+                            'After this date you can refinance your property without penalty!' +
+                          '</p>'
+            });
+            
+            tippy('.tooltip-fixedperiodexpiration',{
+                placement: 'right',
+                allowHTML:true,
+                maxWidth:550,
+                content: '<h4 style="font-weight: bold;">Fixed Period Expiration</h4>' +
+                          '<p style="text-align: justify;font-size:12px">' +
+                            'This is when your loan becomes Adjustable' +
+                          '</p>'
+            });
+            
+            tippy('.tooltip-ballonpayment',{
+                placement: 'right',
+                allowHTML:true,
+                maxWidth:550,
+                content: '<h4 style="font-weight: bold;">Balloon Payment</h4>' +
+                          '<p style="text-align: justify;font-size:12px">' +
+                            'Your loan is due, and you need to refinance!' +
+                          '</p>'
+            });
+            
+            tippy('.tooltip-namechoice',{
+                placement: 'right',
+                allowHTML:true,
+                maxWidth:550,
+                content: '<h4 style="font-weight: bold;">Reinsurance Company Name Choices</h4>' +
+                          '<p style="text-align: justify;font-size:12px">' +
+                            'Submit at least two name choices for your reinsurance company. Choices should be as unique as possible.' +
+                          '</p>' +
+                          '<p style="text-align: justify;font-size:12px">' +
+                            'No company shall be registered by a name which:' +
+                          '</p>' +
+                          '<ul>' +
+                            '<li style="text-align:left;font-size:12px;">Is identical to an existing company</li>' +
+                            '<li style="text-align:left;font-size:12px">Contains the words “Chamber of Commerce”</li>' +
+                            '<li style="text-align:left;font-size:12px">Excludes the word “Incorporation” or “Inc.” to its name</li>' +
+                            '<li style="text-align:left;font-size:12px">' +
+                                'Contains the word(s) “Assurance:, “Bank”, “Building Society”, “Commonwealth”, “Co-Operative Society”, ' +
+                                '“Fidelity”, “Friendly Society”, “Guarantee”, “Indemnity”, “Insurance”, “Trust”, “Trustee”, or “Underwriter”; ' +
+                                'these names are considered to be undesirable or misleading' +
+                            '</li>' +
+                            '<li style="text-align:left;font-size:12px">Includes at its end, “Limited Life Company” or the abbreviation “LLC” as well as “Limited” or the abbreviation “Ltd.”; and/or</li>' +
+                            '<li style="text-align:left;font-size:12px">Contains any words offensive or in reference to the Modoc Tribe, Tribal Council, Chief or Native American Nation</li>' +
+                          '</ul>'
+            });
+        }
+        
+		//SWEET ALERT 
+        function fnShowMessage(title,message,type,showCB){
+            swal({
+                title: title,
+                text: message,
+                type: type,
+                showCancelButton: showCB,
+                confirmButtonColor: '#c53535',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Okay'
+            });
+        }
+        
+
+        //OPEN MODAL TERMNS
+        $j("#modal").iziModal();
+        $j(document).on('click', '.trigger', function (event) {
+            event.preventDefault();
+            $j('#modal').iziModal('open');
+        });
+        
+        $j("#lWhere").click(function(){
+            console.log('Chasu');
+            $j("#fWhere").toggle();
+        });
+        
+        function loadTippys(){
+        	console.log('Chasu');
+            console.log($j('.stage-name').val());
+            console.log('Hola');
+            
+            configTooltips();
+        }
+        
+        function stageClick(val){
+            var keyValue = $j(val).attr('html-key-val');
+            console.log(keyValue);
+        }
+        
+        </script>
+    
+</body>
+    </html>
+
+</apex:page>
