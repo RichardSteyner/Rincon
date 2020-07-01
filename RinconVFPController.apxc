@@ -1,0 +1,297 @@
+public without sharing class RinconVFPController {
+    
+    public Opportunity opportunity {get;set;}
+    public String auxStage {get;set;}
+    
+    public Transient Blob imagePresident{ get;set; }
+	public Transient Blob imageSecretary{ get;set; }
+    
+    public Date auxCloseDate {get;set;}
+    
+    public List<Opportunity> opps {get;set;}
+    
+    public String messageAlert {get; set;}
+    public String message {get; set;}
+    
+    public Transient String fileName {get; set;}
+    public Transient String body {get; set;}
+    
+    public List<ContentDocumentLink> files {get; set;}
+    public Transient Blob fileActual{ get;set; }
+    public String baseUrl {get; set;}
+    public List<ContentDistribution> urlPublics {get; set;}
+    public Map<Id, String> links {get; set;}
+    
+    public Integer filesSize{get; set;}
+    
+    public Boolean showPage {get; set;}
+    public Boolean showEmpty {get; set;}
+    public String username {get; set;}
+    public String password {get; set;}
+    
+    String contactId = '', oppIdSF = '';
+    public List<cStage> optionsStage{get;set;}
+    
+    public RinconVFPController(){
+        opportunity = new Opportunity();
+        baseUrl = Url.getSalesforceBaseUrl().toExternalForm() + '/sfc/servlet.shepherd/version/download/';
+        links = new Map<Id, String>();
+        if(ApexPages.currentPage().getParameters().get('contactId')!=null){
+            System.debug(ApexPages.currentPage().getParameters().get('contactId'));
+            contactId = ApexPages.currentPage().getParameters().get('contactId');
+            
+        	String objectName = 'Opportunity';
+            String allFields = getAllFields(objectName);
+    
+            String query = 'SELECT '+ allFields + ', (Select Id From NotesAndAttachments) FROM '  + objectName + ' where Borrower_Contact__c=\'' + contactId +'\'';
+    
+            System.debug('----------'+query);   
+    
+        	List<Opportunity> opportunityList = Database.query(query);
+            
+            if(opportunityList.size()>0){
+            	showPage = true;
+            	showEmpty = false;
+                opportunity = opportunityList.get(0);
+                auxStage = opportunity.StageName;
+                //opportunity.Signed_Letter_of_Intent__c = system.today();
+                
+                System.debug(opportunity.CloseDate);
+                auxCloseDate = opportunity.CloseDate;
+                System.debug(auxCloseDate);
+                optionsStage = new List<cStage>();
+                getStages();
+                loadOppsRelated();
+                
+                loadFiles();
+                
+                system.debug(opportunity.Where_are_we__c);
+            }else{
+                showPage = false;
+                message = 'You have no related opportunities.';
+            	showEmpty = true;
+            }
+        }else{
+            if(ApexPages.currentPage().getParameters().get('opportunitySF')!=null){
+                System.debug(ApexPages.currentPage().getParameters().get('opportunitySF'));
+                oppIdSF = ApexPages.currentPage().getParameters().get('opportunitySF');
+                
+                String objectName = 'Opportunity';
+                String allFields = getAllFields(objectName);
+        
+                String query = 'SELECT '+ allFields + ', (Select Id From NotesAndAttachments) FROM '  + objectName + ' where Id=\'' + oppIdSF +'\'';
+        
+                System.debug('----------'+query);   
+        
+                List<Opportunity> opportunityList = Database.query(query);
+                
+                if(opportunityList.size()>0){
+                    showPage = true;
+                    showEmpty = false;
+                    opportunity = opportunityList.get(0);
+                    auxStage = opportunity.StageName;
+                    //opportunity.Signed_Letter_of_Intent__c = system.today();
+                    
+                    System.debug(opportunity.CloseDate);
+                    auxCloseDate = opportunity.CloseDate;
+                    System.debug(auxCloseDate);
+                    optionsStage = new List<cStage>();
+                    getStages();
+                    loadOppsRelated();
+                    
+                    loadFiles();
+                    
+                    system.debug(opportunity.Where_are_we__c);
+                }else{
+                    showPage = false;
+                    message = 'Param invalid.';
+                    showEmpty = true;
+                }
+            }else{
+                showPage = false;
+                showEmpty = false;
+            }
+        }
+        
+        
+    }
+    
+    public String getAllFields(String objectName){
+        String allFields = '';
+        Map<String, Schema.SObjectType> schemaMap = Schema.getGlobalDescribe();
+        Map<String, Schema.SObjectField> fieldMap = schemaMap.get(objectName).getDescribe().fields.getMap();
+        Set<string> mapset = fieldMap.keyset(); 
+        /*List<String> lstFields = new List<String>();*/
+        for ( String str : mapset )
+        {
+        	allFields = allFields + str +', '; 
+            //**lstFields.add(str);**
+        }
+        return allFields.removeEnd(', ');
+    }
+    
+    public void loadOppsRelated(){
+        opps = [select Id, Name, Interest_Rate__c, Loan_Amount__c, Prepayment_expiration_date__c, Fixed_Period_Expiration__c
+                from Opportunity
+                where Borrower_Contact__c =: opportunity.Borrower_Contact__c and (StageName = 'Open' or StageName = 'Closed Won')];
+        
+        System.debug(opps);
+    }
+    
+    public void loadFiles(){
+        files = [SELECT Id, ContentDocumentId, LinkedEntityId, ContentDocument.title,
+                 ContentDocument.FileExtension, ContentDocument.LatestPublishedVersionId 
+                 FROM ContentDocumentLink 
+                 where LinkedEntityId=:opportunity.Id
+                 order by ContentDocument.LastModifiedDate desc];
+        filesSize = files.size();
+        System.debug(files.size());
+        for(ContentDocumentLink cdl : files){
+            links.put(cdl.ContentDocumentId, '');
+        }
+        urlPublics = [Select Id, DistributionPublicUrl, ContentDocumentId FROM ContentDistribution WHERE ContentDocumentId in: links.keySet()];
+        for(ContentDistribution aux : urlPublics){
+            links.put(aux.ContentDocumentId, aux.DistributionPublicUrl);
+        }
+    }
+    
+    public List<SelectOption> getRatingOptions()
+	{
+		List<SelectOption> options = new List<SelectOption>();
+		Schema.DescribeFieldResult result = Schema.sObjectType.account.fields.Rating.getSobjectField().getDescribe();
+		List<Schema.PicklistEntry> ple = result.getPicklistValues();
+
+		for( Schema.PicklistEntry f : ple)
+		{
+			options.add(new SelectOption(f.getLabel(), f.getValue()));
+		}
+		return options;
+	}
+    
+    public List<SelectOption> getStages()
+	{
+		List<SelectOption> options = new List<SelectOption>();
+		Schema.DescribeFieldResult result = Schema.sObjectType.opportunity.fields.StageName.getSobjectField().getDescribe();
+		List<Schema.PicklistEntry> ple = result.getPicklistValues();
+
+		for( Schema.PicklistEntry f : ple)
+		{
+			options.add(new SelectOption(f.getLabel(), f.getValue()));
+            optionsStage.add(new cStage(f.getLabel()));
+		}
+		return options;
+	}
+    
+    public PageReference changeStage(){
+        System.debug('Hola');
+        System.debug(opportunity.StageName);
+        
+        return null;
+    }
+    
+    public PageReference save() {
+		PageReference page =  ApexPages.currentPage();
+        System.debug('Save');
+        opportunity.CloseDate = auxCloseDate;
+        update opportunity;
+        page.getParameters().put('contactId',null);
+        page.setRedirect(true);
+        return page;
+	}
+    
+    public PageReference redirectOpp() {
+        System.debug('username: ' + username);
+        System.debug('password: ' + password);
+        List<Contact> contacts = [select Id, Name from Contact where Username__c=: username and Password__c=: password];
+        if(contacts.size()>0){
+            PageReference page =  ApexPages.currentPage();
+            page.getParameters().put('contactId', contacts.get(0).Id);
+            page.setRedirect(true);
+            return page;
+        } else{
+            return null;
+        }
+	}
+    
+    public PageReference doAttachment(){
+        System.debug('Hiiiiiis' + fileName);
+        ContentVersion conVer = new ContentVersion();
+		conVer.PathOnClient = fileName;
+		conVer.Title = fileName;
+        System.debug(body);
+		conVer.VersionData = EncodingUtil.base64Decode(body);
+		insert conVer;
+        Id conDoc = [SELECT ContentDocumentId FROM ContentVersion WHERE Id =:conVer.Id].ContentDocumentId;
+        ContentDocumentLink cDe = new ContentDocumentLink();
+        cDe.ContentDocumentId = conDoc;
+        System.debug(opportunity.Id);
+        cDe.LinkedEntityId = opportunity.Id;
+        cDe.ShareType = 'V';
+        cDe.Visibility = 'AllUsers';
+        insert cDe;
+        ContentDistribution cd = new ContentDistribution();
+        cd.Name = fileName;
+        cd.ContentVersionId = conVer.Id;
+        cd.PreferencesAllowViewInBrowser= true;
+        cd.PreferencesLinkLatestVersion=true;
+        cd.PreferencesNotifyOnVisit=false;
+        cd.PreferencesPasswordRequired=false;
+        cd.PreferencesAllowOriginalDownload= true;
+        insert cd;
+        System.debug('Chau: ' + cDe.Id);
+        sendEmail();
+        loadFiles();
+        /*ContentVersion conVer = new ContentVersion();
+        conVer.ContentLocation = 'S'; // S specify this document is in SF, use E for external files
+        conVer.PathOnClient = fileName; // The files name, extension is very important here which will help the file in preview.
+        conVer.Title = fileName; // Display name of the files
+        conVer.VersionData = EncodingUtil.base64Decode(body); // converting your binary string to Blog
+        System.debug('Antes del insert 1');
+        insert conVer;
+        System.debug('Después del insert 1');
+        
+        ContentDocumentLink cDe = new ContentDocumentLink();
+        cDe.ContentDocumentId = conVer.id;
+        cDe.LinkedEntityId = opportunity.Id; // you can use objectId,GroupId etc
+        cDe.ShareType = 'I'; // Inferred permission, checkout description of ContentDocumentLink object for more details
+        //cDe.Visibility = 'InternalUsers';
+        System.debug('Antes del insert 2');
+        insert cDe;
+        System.debug('Después del insert 2');*/
+        
+        /*Attachment at = new Attachment();
+        at.Name = fileName;
+        at.Body = Blob.valueOf(body);
+        at.ParentId = opportunity.Id;
+        System.debug('Antes del insert');
+        insert at;
+        System.debug('Después del insert');*/
+        return null;
+    }
+    
+    public void sendEmail(){
+        String body = '<p>Hey Tiffany,<br/>'+
+            			'You have a new file upload for this Opportunity:<br/>' +
+            			Url.getSalesforceBaseUrl().toExternalForm() +'/' + opportunity.Id +'<br/>' + 
+            			'Thanks!</p>';
+        List<Messaging.SingleEmailMessage> mails = new List<Messaging.SingleEmailMessage>();
+		Messaging.SingleEmailMessage mail = New Messaging.SingleEmailMessage();
+		String[] toAddress =  new String[]{'tiffanie@rincon-group.com'};
+		mail.setToAddresses(toAddress);
+		mail.setSubject('New File upload in Community');
+        //mail.setPlainTextBody(String.valueOf(response.getBody()).subStringBetween('<template id="100000067"','</template>'));
+        mail.setHtmlBody(body);
+        mails.add(mail);
+		Messaging.sendEmail(mails);
+    }
+    
+    public class cStage{
+        public String key {get;set;}
+        public String helpText {get; set;}
+        public cStage(String vkey){
+            key = vkey;
+            helpText = vKey + ' <br/>here text orientation';
+        }
+    }
+    
+}
